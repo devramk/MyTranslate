@@ -11,11 +11,15 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.project.mytranslate.databinding.FragmentFirstBinding;
 
 import java.util.ArrayList;
@@ -27,6 +31,7 @@ public class FirstFragment extends Fragment {
     private TextToSpeech textToSpeech;
     private SpeechRecognizer speechRecognizer;
     private Intent speechRecognizerIntent;
+    private Spinner languageSpinner;
 
     @Override
     public View onCreateView(
@@ -46,13 +51,21 @@ public class FirstFragment extends Fragment {
             @Override
             public void onInit(int i) {
                 if (i != TextToSpeech.ERROR) {
-                    textToSpeech.setLanguage(Locale.getDefault());
+                    textToSpeech.setLanguage(Locale.UK);
                 }
             }
         });
 
-        return fragmentFirstBinding.getRoot();
+        languageSpinner = fragmentFirstBinding.langSpinner.findViewById(R.id.lang_spinner);
 
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.languages,
+                android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+
+        languageSpinner.setAdapter(adapter);
+
+        return fragmentFirstBinding.getRoot();
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -113,8 +126,10 @@ public class FirstFragment extends Fragment {
 
             @Override
             public void onResults(Bundle bundle) {
-                ArrayList<String> speechData = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                textToSpeech.speak(speechData.get(0), TextToSpeech.QUEUE_FLUSH, null, null);
+                ArrayList<String> speechData = bundle
+                        .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                textToSpeech.speak(speechData.get(0), TextToSpeech.QUEUE_FLUSH,
+                        null, null);
             }
 
             @Override
@@ -124,6 +139,22 @@ public class FirstFragment extends Fragment {
 
             @Override
             public void onEvent(int i, Bundle bundle) {
+
+            }
+        });
+
+        languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i != 0) {
+                    Snackbar.make(view, "Selected language for translation is "
+                                    + adapterView.getItemAtPosition(i).toString(),
+                            Snackbar.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
         });
