@@ -56,7 +56,7 @@ public class FirstFragment extends Fragment {
             }
         });
 
-        languageSpinner = fragmentFirstBinding.langSpinner.findViewById(R.id.lang_spinner);
+        languageSpinner = fragmentFirstBinding.langSpinner;
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.languages,
